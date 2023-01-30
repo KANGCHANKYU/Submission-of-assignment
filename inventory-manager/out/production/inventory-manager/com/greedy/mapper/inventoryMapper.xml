@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.greedy.mapper.inventoryMapper">
+
+    <resultMap id="DTOMap" type="com.greedy.DTO.inventoryDTO">
+        <id property="productCode" column="PRODUCT_CODE"/>
+        <result property="productName" column="PRODUCT_NAME"/>
+        <result property="productCost" column="PRODUCT_COST"/>
+        <result property="productPrice" column="PRODUCT_PRICE"/>
+        <result property="usedProduct" column="USED_PRODUCT"/>
+        <result property="localCode" column="LOCAL_CODE"/>
+    </resultMap>
+
+    <select id="selectAll" parameterType="list" resultMap="DTOMap">
+        SELECT
+            PRODUCT_CODE
+            ,PRODUCT_NAME
+            ,PRODUCT_COST
+            ,PRODUCT_PRICE
+            ,USED_PRODUCT
+            ,LOCAL_CODE
+        FROM INVEN_INFO
+        ORDER BY PRODUCT_CODE
+    </select>
+
+    <select id="selectSerach" parameterType="hashmap" resultMap="DTOMap">
+        SELECT
+        PRODUCT_CODE
+        ,PRODUCT_NAME
+        ,PRODUCT_COST
+        ,PRODUCT_PRICE
+        ,USED_PRODUCT
+        ,LOCAL_CODE
+        FROM INVEN_INFO
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="codeValue != null">
+                PRODUCT_CODE = #{ codeValue }
+            </if>
+            <if test="localValue != null">
+                AND LOCAL_CODE = #{ localValue }
+            </if>
+        </trim>
+        ORDER BY PRODUCT_CODE
+    </select>
+
+    <insert id="insertInven" parameterType="com.greedy.DTO.inventoryDTO" >
+        INSERT
+            INTO INVEN_INFO
+            (
+                PRODUCT_CODE
+               ,PRODUCT_NAME
+               ,PRODUCT_COST
+               ,PRODUCT_PRICE
+               ,USED_PRODUCT
+               ,LOCAL_CODE
+            )
+        VALUES
+        (
+            SEQ_INVEN_CODE.NEXTVAL
+            ,#{ productName }
+            ,#{ productCost }
+            ,#{ productPrice }
+            ,#{ usedProduct }
+            ,#{ localCode }
+        )
+    </insert>
+
+    <update id="updateInven" parameterType="com.greedy.DTO.inventoryDTO">
+        UPDATE
+        INVEN_INFO
+         SET PRODUCT_NAME = #{ productName }
+        ,PRODUCT_COST = #{ productCost }
+        ,PRODUCT_PRICE = #{ productPrice }
+        ,USED_PRODUCT = #{ usedProduct }
+        ,LOCAL_CODE = #{ localCode }
+        WHERE PRODUCT_CODE = #{ productCode }
+    </update>
+
+    <delete id="deleteInven" parameterType="_int">
+        DELETE INVEN_INFO
+        WHERE PRODUCT_CODE = #{ deleteCode }
+
+    </delete>
+</mapper>
